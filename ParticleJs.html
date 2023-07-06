@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            background-color: #000;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript" charset="utf-8">
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        
+        // change  default fill and stroke style
+        ctx.fillStyle = '#fff';
+        ctx.strokeStyle = "#fff";
+        ctx.strokeWidth = 7;
+        //
+        
+        const cursorPosition = {
+            x:null,
+            y:null
+        }
+        
+        const particles = [];
+        
+        class Particle{
+            constructor(x,y){
+                this.x = x;
+                this.y = y;
+                this.size = 2;
+                this.color = "#000";
+                this.baseX = this.x
+                this.baseY = this.y
+                this.density = (Math.random()*22)+8
+            }
+            
+            update(){
+                let dx = cursorPosition.x-this.x
+                let dy = cursorPosition.y-this.y
+                let distance = Math.sqrt(dx*dx+dy*dy);
+                let forceDX =dx/distance
+                let forceDY = dy/distance
+                let maxDistance = 100;
+                let force = (maxDistance-distance)/maxDistance
+                let directionX = forceDX*force*this.density
+                let directionY = forceDY*force*this.density
+                if (distance<maxDistance) {
+                    this.x-=directionX
+                    this.y-=directionY
+                }
+                else{
+                    if (this.baseX!==this.x) {
+                        let dx = this.x-this.baseX
+                        this.x -= dx/10
+                    
+                    }
+                    if (this.baseY!==this.Y) {
+                        let dy = this.y-this.baseY
+                        this.y -= dy/10
+                    
+                    }
+                }
+            }
+            
+            draw(){
+                ctx.beginPath()
+                ctx.arc(this.x,this.y,this.size,0,Math.PI*2)
+                ctx.fillStyle=this.color
+                ctx.fill()
+            }
+        }
+        
+        
+        
+        
+        
+        function init() {
+            for (let i = 0; i < 200; i++) {
+                particles.push(new Particle(Math.random()*canvas.width,Math.random()*canvas.height))
+            }
+        }
+        init()
+        
+        function animate(){
+            
+            ctx.clearRect(0,0,canvas.width,canvas.height)
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw()
+                particles[i].update()
+            }
+            connect()
+            requestAnimationFrame(animate)
+        }
+        animate()
+        
+        
+        function connect(){
+            let opacity = 1
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x- particles[b].x
+                    let dy = particles[a].y - particles[b].y
+                    let distance = Math.sqrt(dx*dx+dy*dy);
+                    if (distance<50) {
+                        opacity = 1-(distance/50)
+                        ctx.beginPath()
+                        ctx.lineWidth = 2
+                        ctx.strokeStyle = `hsla(${particles[a].y-particles[b].x},100%,50%,${opacity})`
+                        ctx.moveTo(particles[a].x,particles[a].y)
+                        ctx.lineTo(particles[b].x,particles[b].y)
+                        ctx.stroke()
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
+        
+    var isTouching = false;
+        
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    function handleTouchStart(event) {
+      event.preventDefault();
+      isTouching = true;
+      const touch = event.touches[0];
+      cursorPosition.x = touch.clientX;
+      cursorPosition.y = touch.clientY;
+    }
+
+    function handleTouchMove(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      cursorPosition.x = touch.clientX;
+      cursorPosition.y = touch.clientY;
+      
+      
+    }
+
+    function handleTouchEnd(event) {
+      event.preventDefault();
+      isTouching = false;
+      cursorPosition.x=null
+      cursorPosition.y=null
+    }
+    
+    window.addEventListener('mousemove',(e)=>{
+        cursorPosition.x=e.x
+        cursorPosition.y=e.y
+    })
+    </script>
+</body>
+</html>

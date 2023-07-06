@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+            -webkit-user-select:none;
+        }
+        body{
+            background-color: #fff;
+            min-height: 100vh;
+        }
+        #jsize{
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        #canvas{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            max-width: 100%;
+            max-height: 100%;
+        }
+        button{
+            padding: 5px;
+            font-size: 1.2rem;
+        }
+        .button-group{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+        }
+        .button-group>div{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <div class="button-group">
+        <div>
+            
+            <div></div>
+            <button id="btn_up">up</button>
+            <div></div>
+            
+            <button id="btn_left">left</button>
+            <div></div>
+            <button id="btn_right">right</button>
+            
+            <div></div>
+            <button id="btn_down">down</button>
+            <div></div>
+        </div>
+        <button id="btn_action">ball</button>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script src="character.js" type="text/javascript" charset="utf-8"></script>
+    <script src="background.js" type="text/javascript" charset="utf-8"></script>
+    <script src="init.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

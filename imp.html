@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>canvas</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            background-color: #0c001e;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+        <script>
+        (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+    </script>
+    <script type="text/javascript">
+        const canvas = document.getElementById('canvas');
+        canvas.height = 452
+        canvas.width = 679
+        const ctx = canvas.getContext('2d')
+        const img = new Image();
+        
+        
+        
+        img.src = (function(){
+            return "./img.jpeg"
+        }())
+        img.onload = ()=>{
+            
+            
+        ctx.drawImage(img,0,0,canvas.width,canvas.height)
+        
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+        //
+        //console.log(pixels)
+        
+        let mappedImage = [];
+        
+        const numberOfParticle =2000;
+        
+        let particleArray = [];
+        
+        
+        for (let y = 0; y < pixels.height; y++) {
+            let row = [];
+            for (let x = 0; x < pixels.width; x++) {
+                let red = pixels.data[(y * 4 * pixels.width) + (x * 4)]
+                let green = pixels.data[(y * 4 * pixels.width) + (x * 4+1)]
+                let blue = pixels.data[(y * 4 * pixels.width) + (x * 4+2)]
+                const brightness = calculateRelativeBrightness(red,green,blue)
+                const cell = [
+                    cellBrightness = brightness,
+                    ]
+                row.push(cell)
+            }
+            mappedImage.push(row)
+        }
+        
+        function calculateRelativeBrightness(red,green,blue){
+            return Math.sqrt(
+                (red*red)*0.299+
+                (green*green)*0.587+
+                (blue*blue)*0.114
+                )/100
+        }
+        
+        class Particle{
+            constructor(){
+                this.x = Math.random()*canvas.width;
+                this.y = 0;
+                this.speed = 0;
+                this.velocity = Math.random()*2.5;
+                this.size = Math.random()*0.5+0.5
+                this.position1 = Math.floor(this.y)
+                this.position2 = Math.floor(this.x)
+            }
+            update(){
+                this.position1 = Math.floor(this.y)
+                this.position2 = Math.floor(this.x)
+                this.speed = mappedImage[this.position1][this.position2][0]
+                let movement = (2.5-this.speed) + this.velocity
+                this.y += movement;
+                if (this.y >= canvas.height) {
+                    this.y = 0;
+                    this.x = Math.random()*canvas.width
+                }
+            }
+            draw(){
+                ctx.beginPath()
+                ctx.fillStyle = "white"
+                ctx.arc(this.x, this.y, this.size,0,Math.PI*2)
+                ctx.fill()
+            }
+        }
+        
+        function init(){
+            for (let i = 0; i < numberOfParticle; i++) {
+                particleArray.push(new Particle)
+            }
+        }
+        init()
+        
+        
+        function animate(){
+            ctx.globalAlpha = 0.05;
+            ctx.fillStyle = 'rgb(0,0,0)'
+            ctx.fillRect(0,0,canvas.width,canvas.height)
+            ctx.globalAlpha = 0.02;
+            for (let i = 0; i < particleArray.length; i++) {
+                ctx.globalAlpha = particleArray[i].speed;
+                particleArray[i].update()
+                particleArray[i].draw()
+            }
+            requestAnimationFrame(animate)
+        }
+        animate()
+        
+        
+        }
+        
+        
+    </script>
+</body>
+</html>
